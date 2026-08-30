@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Voice Cloning Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+
+  <body>
+    <main class="container">
+      <h1>Hello World!</h1>
+      <img src="../static/image.gif" />
+
+      <form id="voice-form">
+        <div class="input-wrapper">
+          <textarea
+            id="text"
+            name="text"
+            maxlength="500"
+            placeholder="Tell me what to say..."
+          ></textarea>
+
+          <div class="character-count"><span id="count">0</span> / 500</div>
+        </div>
+
+        <button type="submit" id="generate-btn">
+          <span id="button-text">Generate voice</span>
+          <span id="spinner" class="spinner"></span>
+        </button>
+      </form>
+
+      <div id="result" class="result hidden">
+        <div class="result-header">
+          <span>YOUR GENERATED VOICE</span>
+        </div>
+
+        <audio id="audio" controls></audio>
+      </div>
+
+      <p id="error" class="error hidden"></p>
+    </main>
+
+    <script>
+      const form = document.getElementById("voice-form");
+      const textarea = document.getElementById("text");
+      const count = document.getElementById("count");
+      const button = document.getElementById("generate-btn");
+      const buttonText = document.getElementById("button-text");
+      const spinner = document.getElementById("spinner");
+      const result = document.getElementById("result");
+      const audio = document.getElementById("audio");
+      const error = document.getElementById("error");
+
+      textarea.addEventListener("input", () => {
+        count.textContent = textarea.value.length;
+      });
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const text = textarea.value.trim();
+
+        if (!text) {
+          showError("Please enter something for me to say.");
+          return;
+        }
+
+        button.disabled = true;
+        buttonText.textContent = "Generating...";
+        spinner.classList.add("visible");
+
+        result.classList.add("hidden");
+        error.classList.add("hidden");
+
+        try {
+          const formData = new FormData(form);
+
+          const response = await fetch("/generate", {
+            method: "POST",
+            body: formData,
+          });
+
+          if (!response.ok) {
+            throw new Error("Something went wrong.");
+          }
+
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+
+          audio.src = url;
+          result.classList.remove("hidden");
+        } catch (err) {
+          showError("Something went wrong while generating the voice.");
+        } finally {
+          button.disabled = false;
+          buttonText.textContent = "Generate voice";
+          spinner.classList.remove("visible");
+        }
+      });
+
+      function showError(message) {
+        error.textContent = message;
+        error.classList.remove("hidden");
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,38 @@
+seed_everything: true
+
+trainer:
+  accelerator: cpu
+  devices: 1
+  max_epochs: 1000
+  log_every_n_steps: 10
+  default_root_dir: /Users/suleiyadanar/Desktop/voice-cloning/base-model/checkpoints/sulei
+
+model:
+  sample_rate: 22050
+  num_speakers: 1
+  learning_rate: 0.0001
+
+  warmstart_ckpt: /Users/suleiyadanar/Desktop/voice-cloning/base-model/checkpoints/amy/epoch=6679-step=1554200.ckpt
+
+data:
+  csv_path: /Users/suleiyadanar/Desktop/voice-cloning/base-model/corpus/metadata.csv
+  audio_dir: /Users/suleiyadanar/Desktop/voice-cloning/base-model/corpus/wavs
+
+  cache_dir: /Users/suleiyadanar/Desktop/voice-cloning/base-model/processed/cache
+  config_path: /Users/suleiyadanar/Desktop/voice-cloning/base-model/exports/config.json
+
+  espeak_voice: en-us
+  voice_name: sulei
+
+  num_symbols: 256
+
+  batch_size: 2
+  validation_split: 0.1
+
+  trim_silence: true
+  keep_seconds_before_silence: 0.25
+  keep_seconds_after_silence: 0.25
+
+  phoneme_type: espeak
+  dataset_type: text
+ckpt_path: /Users/suleiyadanar/Desktop/voice-cloning/base-model/checkpoints/sulei/lightning_logs/version_0/checkpoints/epoch=1-val_mos=1.4852.ckpt
